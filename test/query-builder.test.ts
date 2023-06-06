@@ -54,36 +54,36 @@ describe('QueryBuilder', () => {
   describe('where only one column + value', () => {
     test('should return filters when called with string value', () => {
       const sqlQuery = queryBuilder.where('my_column', 'my_value');
-      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE my_column = 'my_value'`);
+      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE tests.my_column = 'my_value'`);
     });
 
     test('should return filters when called with number value', () => {
       const sqlQuery = queryBuilder.where('my_column', 1);
-      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE my_column = 1`);
+      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE tests.my_column = 1`);
     });
 
     test('should return filters when called with date value', () => {
       const date = new Date();
       const sqlQuery = queryBuilder.where('my_column', date);
-      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE my_column = '${date.toISOString()}'`);
+      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE tests.my_column = '${date.toISOString()}'`);
     });
   });
 
   describe('where one column + one value + one operation', () => {
     test('should return filters when called with string value', () => {
-      const sqlQuery = queryBuilder.where('my_column', '=', 'my_value');
-      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE my_column = 'my_value'`);
+      const sqlQuery = queryBuilder.where('my_column', '>=', 'my_value');
+      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE tests.my_column >= 'my_value'`);
     });
 
     test('should return filters when called with number value', () => {
       const sqlQuery = queryBuilder.where('my_column', 1);
-      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE my_column = 1`);
+      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE tests.my_column = 1`);
     });
 
     test('should return filters when called with date value', () => {
       const date = new Date();
       const sqlQuery = queryBuilder.where('my_column', date);
-      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE my_column = '${date.toISOString()}'`);
+      expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE tests.my_column = '${date.toISOString()}'`);
     });
   });
 });
@@ -94,12 +94,12 @@ describe('Mixed', () => {
     queryBuilder = new QueryBuilder('tests');
   })
   test('select + where', () => {
-    const expectedQuery = "SELECT tests.abc FROM tests WHERE my_column = 'my_value'";
+    const expectedQuery = "SELECT tests.abc FROM tests WHERE tests.my_column = 'my_value'";
     const query = queryBuilder.select('abc').where('my_column', 'my_value').toSql();
     expect(query).toEqual(expectedQuery);
   });
   test('select + where inverted order', () => {
-    const expectedQuery = "SELECT tests.abc FROM tests WHERE my_column = 'my_value'";
+    const expectedQuery = "SELECT tests.abc FROM tests WHERE tests.my_column = 'my_value'";
     const query = queryBuilder.where('my_column', 'my_value').select('abc').toSql();
     expect(query).toEqual(expectedQuery);
   });

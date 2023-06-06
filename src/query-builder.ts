@@ -7,6 +7,11 @@ interface Condition {
   operation: string;
 }
 
+interface OrderBy {
+  fieldName: string;
+  direction: 'ASC' | 'DESC';
+}
+
 export default class QueryBuilder {
   protected _tableName: string;
   protected _defaultField = '*';
@@ -14,6 +19,7 @@ export default class QueryBuilder {
   protected _fields = '';
   protected _driver;
   protected _filters: Condition[] = [];
+  protected _orderBy: OrderBy[] = [];
   private validOperations = ['=', '>=', '<=', 'like', '<>', '>', '<'];
 
   constructor(tableName: string, driver = 'pg') {
@@ -46,7 +52,7 @@ export default class QueryBuilder {
     let filters: string[] = [];
     if (this._filters.length > 0) {
       filters = this._filters.map((filter) => {
-        return `${filter.fieldName} ${filter.operation} ${this._quoteValue(filter.value)}`;
+        return `${this._tableName}.${filter.fieldName} ${filter.operation} ${this._quoteValue(filter.value)}`;
       });
     }
 
@@ -86,6 +92,12 @@ export default class QueryBuilder {
       }
       this._filters.push({ fieldName: args[0], value: args[2], operation: args[1] });
     }
+
+    return this;
+  }
+
+  orderBy(field: string, direction?: 'ASC' | 'DESC'): QueryBuilder {
+    this._orderBy.push({fieldName: field, direction: direction?? 'ASC'});
 
     return this;
   }
