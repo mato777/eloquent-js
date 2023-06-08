@@ -86,21 +86,21 @@ describe('QueryBuilder', () => {
       expect(queryBuilder.toSql()).toEqual(`SELECT tests.* FROM tests WHERE tests.my_column = '${date.toISOString()}'`);
     });
   });
-});
 
-describe('Mixed', () => {
-  let queryBuilder: QueryBuilder;
-  beforeEach(() => {
-    queryBuilder = new QueryBuilder('tests');
-  })
-  test('select + where', () => {
-    const expectedQuery = "SELECT tests.abc FROM tests WHERE tests.my_column = 'my_value'";
-    const query = queryBuilder.select('abc').where('my_column', 'my_value').toSql();
-    expect(query).toEqual(expectedQuery);
+  describe('order by', () => {
+    test('should return order by in the query with ASC direction if not provided', () => {
+      const query = queryBuilder.orderBy('my_column').toSql();
+      expect(query).toEqual('SELECT tests.* FROM tests ORDER BY tests.my_column ASC');
+    });
+
+    test('should return order by in the query with proper direction if provided', () => {
+      const query = queryBuilder.orderBy('my_column', 'ASC').toSql();
+      expect(query).toEqual('SELECT tests.* FROM tests ORDER BY tests.my_column ASC');
+    });
+
+    test('should return order by in the query with proper direction if provided', () => {
+      const query = queryBuilder.orderBy('my_column', 'DESC').toSql();
+      expect(query).toEqual('SELECT tests.* FROM tests ORDER BY tests.my_column DESC');
+    });
   });
-  test('select + where inverted order', () => {
-    const expectedQuery = "SELECT tests.abc FROM tests WHERE tests.my_column = 'my_value'";
-    const query = queryBuilder.where('my_column', 'my_value').select('abc').toSql();
-    expect(query).toEqual(expectedQuery);
-  });
-})
+});

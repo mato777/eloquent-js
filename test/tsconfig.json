@@ -1,22 +1,13 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node 18",
-  "_version": "2.0.0",
-  "extends": "@tsconfig/node18",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "lib": [
-      "es2022"
-    ],
-    "module": "es2022",
-    "target": "es2022",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "diagnostics": false,
+    "noEmit": true,
+    "noImplicitAny": false,
     "outDir": "build",
-    "baseUrl": ".",
-    }
+    "sourceMap": false,
+    "typeRoots": ["../node_modules/@types", "../src/types"]
   },
-  "include": ["src/**/*"]
+  "include": ["../src/**/*", "./**/*"],
+  "exclude": ["**/__mocks__/**"]
 }

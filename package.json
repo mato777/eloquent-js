@@ -6,7 +6,8 @@
     "test": "jest",
     "build": "tsc",
     "prettier": "prettier 'src/**/*.ts'",
-    "prettier:fix": "prettier --write 'src/**/*.ts'"
+    "prettier:fix": "prettier --write 'src/**/*.ts'",
+    "integration-tests": "docker-compose up -d && npx ts-node ./test/postgres/init-pg-db.ts"
   },
   "engines": {
     "node": ">=18.0.0",

@@ -19,8 +19,7 @@ interface PostgresConfig  {
 
 const DBClient = new Client({
   host: 'localhost',
-  port: 5432,
-  database: 'ledger',
+  port: 5437,
   user: 'admin',
   password: 'admin'
 });

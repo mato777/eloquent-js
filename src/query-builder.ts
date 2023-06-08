@@ -1,13 +1,13 @@
-type DBValue = string | number | Date | boolean;
-type Operation = '=' | '>=' | '<=' | 'like' | '<>' | '>' | '<';
+export type DBValue = string | number | Date | boolean;
+export type Operation = '=' | '>=' | '<=' | 'like' | '<>' | '>' | '<';
 
-interface Condition {
+export interface Condition {
   fieldName: string;
   value: DBValue;
   operation: string;
 }
 
-interface OrderBy {
+export interface OrderBy {
   fieldName: string;
   direction: 'ASC' | 'DESC';
 }
@@ -20,6 +20,8 @@ export default class QueryBuilder {
   protected _driver;
   protected _filters: Condition[] = [];
   protected _orderBy: OrderBy[] = [];
+  protected _limit: number | undefined;
+  protected _offset: number | undefined;
   private validOperations = ['=', '>=', '<=', 'like', '<>', '>', '<'];
 
   constructor(tableName: string, driver = 'pg') {
@@ -57,9 +59,13 @@ export default class QueryBuilder {
     }
 
     const where = this._filters.length > 0 ? ` WHERE ${filters.join(' AND ')}` : '';
+    const orderBy = this._orderBy.length > 0? ` ORDER BY ${this._orderByToString()}`: '';
+    const limit = this._limit? ` LIMIT ${this._limit}` : '';
+    const offset = this._offset? ` OFFSET ${this._offset}`: '';
 
-    return `${query}${where}`;
+    return `${query}${where}${orderBy}${limit}${offset}`;
   }
+
 
   private _quoteValue(value: DBValue): DBValue {
     if (typeof value === 'number') {
@@ -99,6 +105,26 @@ export default class QueryBuilder {
   orderBy(field: string, direction?: 'ASC' | 'DESC'): QueryBuilder {
     this._orderBy.push({fieldName: field, direction: direction?? 'ASC'});
 
+    return this;
+  }
+  private _orderByToString() {
+    if(this._orderBy.length > 0) {
+      const orders = this._orderBy.map(item  => {
+        return `${this._tableName}.${item.fieldName} ${item.direction}`;
+      });
+      return orders.join(', ');
+    }
+
+    return '';
+  }
+
+  public take(quantity: number): QueryBuilder {
+    this._limit = quantity;
+    return this;
+  }
+
+  public skip(skip: number): QueryBuilder {
+    this._offset = skip;
     return this;
   }
 }

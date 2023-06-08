@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: eloquent-js-postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - '5437:5432'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'admin']
+      interval: '5s'
+      timeout: '5s'
+      retries: 5

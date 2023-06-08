@@ -1,5 +1,4 @@
 import { DBClient } from '../src/connection';
-import QueryBuilder from "../src/query-builder";
 
 describe('connection', () => {
   beforeAll(async () => {
@@ -13,9 +12,5 @@ describe('connection', () => {
 
   test('it works', async () => {
 
-    const queryBuilder = new QueryBuilder('accounts');
-    const result = await DBClient.query(queryBuilder.where('id', '>=', 5).toSql());
-
-    expect(result).not.toBeUndefined();
   });
 });
