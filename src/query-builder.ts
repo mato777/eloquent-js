@@ -1,5 +1,8 @@
 export type DBValue = string | number | Date | boolean;
 export type Operation = '=' | '>=' | '<=' | 'like' | '<>' | '>' | '<';
+enum JoinType {
+  INNER_JOIN = 'INNER_JOIN'
+}
 
 export interface Condition {
   fieldName: string;
@@ -12,6 +15,14 @@ export interface OrderBy {
   direction: 'ASC' | 'DESC';
 }
 
+interface Join {
+  joinType: JoinType;
+  joinTable: string;
+  leftKey: string;
+  rightKey: string;
+  operation: Operation;
+}
+
 export default class QueryBuilder {
   protected _tableName: string;
   protected _defaultField = '*';
@@ -22,6 +33,7 @@ export default class QueryBuilder {
   protected _orderBy: OrderBy[] = [];
   protected _limit: number | undefined;
   protected _offset: number | undefined;
+  protected _joins: Join[] = [];
   private validOperations = ['=', '>=', '<=', 'like', '<>', '>', '<'];
 
   constructor(tableName: string, driver = 'pg') {
@@ -34,7 +46,7 @@ export default class QueryBuilder {
     if (this._columns.length === 0) {
       this._columns = [this._defaultField];
     }
-    this._fields = this._columns.map((field) => `${this._tableName}.${field}`).join(', ');
+
     return this;
   }
 
@@ -46,11 +58,17 @@ export default class QueryBuilder {
     return this._fields;
   }
 
+  protected selectFields() {
+    if(this._columns.length > 0) {
+      return '*';
+    }
+  }
+
   public toSql(): string {
     if (this._columns.length === 0) {
       this.select();
     }
-    let query = `SELECT ${this.fields}` + ` FROM ${this._tableName}`;
+    let query = `SELECT ${this.selectFields()}` + ` FROM ${this._tableName}`;
     let filters: string[] = [];
     if (this._filters.length > 0) {
       filters = this._filters.map((filter) => {
@@ -58,12 +76,13 @@ export default class QueryBuilder {
       });
     }
 
-    const where = this._filters.length > 0 ? ` WHERE ${filters.join(' AND ')}` : '';
-    const orderBy = this._orderBy.length > 0? ` ORDER BY ${this._orderByToString()}`: '';
-    const limit = this._limit? ` LIMIT ${this._limit}` : '';
+    const where = this._filters.length > 0 ? ` WHERE ${filters.join(' AND ')}`.trimEnd() : '';
+    const orderBy = this._orderBy.length > 0? `ORDER BY ${this._orderByToString()}`.trim(): '';
+    const limit = this._limit? `LIMIT ${this._limit}`.trim() : '';
     const offset = this._offset? ` OFFSET ${this._offset}`: '';
+    const joins = this._joins.length > 0 ? this.joinsToString() : '';
 
-    return `${query}${where}${orderBy}${limit}${offset}`;
+    return `${query}${joins}${where}${orderBy}${limit}${offset}`.trim();
   }
 
 
@@ -126,5 +145,25 @@ export default class QueryBuilder {
   public skip(skip: number): QueryBuilder {
     this._offset = skip;
     return this;
+  }
+
+  public join(joinTable: string, leftKey: string, operation: Operation, rightKey: string): QueryBuilder {
+    this._joins.push({
+      joinType: JoinType.INNER_JOIN,
+      joinTable,
+      leftKey,
+      operation,
+      rightKey
+    })
+
+    return this;
+  }
+
+  public joinsToString() {
+    if(this._joins.length > 0) {
+      return this._joins.map(item => `${item.joinType === JoinType.INNER_JOIN? 'JOIN': JoinType} ${item.joinTable} ON ${item.leftKey} ${item.operation} ${item.rightKey}`);
+    }
+
+    return '';
   }
 }

@@ -13,6 +13,7 @@ const config: Config.InitialOptions = {
       },
     ],
   },
-  testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/config.*.js'],
+  testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/config.*.js', '<rootDir>/test/integration'],
+  workerThreads: true
 };
 export default config;

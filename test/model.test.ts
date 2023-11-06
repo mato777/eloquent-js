@@ -1,11 +1,10 @@
-import Model from '../src/Model';
+import Model from '../src/model';
 
 describe('Model', () => {
   class Plane extends Model {}
 
   describe('tableName', () => {
-    class Car extends Model {
-    }
+    class Car extends Model {}
 
     test('should return with the name of class in lowercase and in plural if no tableName is provided', () => {
       const car = new Car();

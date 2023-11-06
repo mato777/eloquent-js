@@ -5,7 +5,7 @@
     "noEmit": true,
     "noImplicitAny": false,
     "outDir": "build",
-    "sourceMap": false,
+    "sourceMap": true,
     "typeRoots": ["../node_modules/@types", "../src/types"]
   },
   "include": ["../src/**/*", "./**/*"],

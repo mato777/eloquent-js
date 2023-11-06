@@ -1,4 +1,4 @@
-import { DBClient } from '../src/connection';
+import { DBClient } from '../../src/connection';
 
 describe('connection', () => {
   beforeAll(async () => {
@@ -11,6 +11,7 @@ describe('connection', () => {
 
 
   test('it works', async () => {
-
+    const query = await DBClient.query(`SELECT 1`);
+    expect(query.rowCount).toEqual(1);
   });
 });
